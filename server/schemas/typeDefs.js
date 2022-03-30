@@ -3,46 +3,49 @@
 const { gql } = require("apollo-server-express");
 
 // Define the necessary Query and Mutation types
+//whatever comes after the colon in the mutation is the type that is being returned
+// (type User is being returned in saveBook and removeBook)
 const typeDefs = gql`
-type Query {
-    users: [User]
-    user(username: String!): User
-    thoughts(username: String): [Thought]
-    thought(_id: ID!): Thought
-  },
-
-type Mutation {
-    login(email: String!, password: String!): User
-    addUser(username: String!, email: String!, password: String!): User
-    saveBook:
-    removeBook:
-  }
-
   type User {
     _id: ID
     username: String
     email: String
     bookCount: Int
     savedBooks: [Book]
-  },
+  }
 
   type Book {
-    _id: ID
-    authors: String []
-    title: String
-    image: 
-    link:
-  },
+    _id: ID!
+    authors: [String]
+    title: String!
+    image: String
+    link: String
+  }
 
   type Auth {
-    token:
-    user: 
-  },
+    token: ID!
+    user: User
+  }
+
+  input BookInput {
+    authors: [String]
+    description: String!
+    bookId: String!
+    image: String!
+    link: String
+    title: String!
+  }
 
   type Query {
-    users: [User]
-    user(username: String!): User
-    thoughts(username: String): [Thought]
-    thought(_id: ID!): Thought
+    me: User
+  }
+
+  type Mutation {
+    login(email: String!, password: String!): Auth
+    addUser(username: String!, email: String!, password: String!): Auth
+    saveBook(bookData: BookInput!): User
+    removeBook(bookId: ID!): User
   }
 `;
+
+module.exports = typeDefs;
