@@ -1,14 +1,17 @@
 const { AuthenticationError } = require("apollo-server-express");
-const { User } = require("../models");
+const { User, Book } = require("../models");
 const { signToken } = require("../utils/auth");
 
 const resolvers = {
-  // resolve/create code for queries inlcuded in typeDefs file (queries read the database)
+  // resolve/create code for queries inlcuded in typeDefs file
+  // (queries read the database)
+
   Query: {
     me: async (parent, args, context) => {
+      // console.log(context.user);
       if (context.user) {
-        const userData = await User.fineOne({ _id: context.user._id }).select(
-          "-__v - password"
+        const userData = await User.findById({ _id: context.user._id }).select(
+          "-__v -password"
         );
         return userData;
       }
@@ -16,7 +19,8 @@ const resolvers = {
     },
   },
 
-  // resolve/create code for mutations included in typeDefs file (mutations modify database)
+  // resolve/create code for mutations included in typeDefs file
+  // (mutations modify database)
   Mutation: {
     addUser: async (parent, args) => {
       const user = await User.create(args);
@@ -41,7 +45,7 @@ const resolvers = {
       return { token, user };
     },
 
-    saveBook: async (parent, { bookId }, context) => {
+    saveBook: async (parent, { bookData }, context) => {
       if (context.user) {
         const updatedUser = await User.findByIdAndUpdate(
           { _id: context.user._id },
